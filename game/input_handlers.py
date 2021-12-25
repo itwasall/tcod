@@ -63,6 +63,7 @@ class EventHandler(tcod.event.EventDispatch[ActionOrHandler]):
     def handle_action(self, action: game.actions.Action) -> EventHandler:
         """Handle actions returned from event methods."""
         action.perform()
+        self.engine.update_fov()
         return self
 
     def ev_quit(self, event: tcod.event.Quit) -> Optional[ActionOrHandler]:

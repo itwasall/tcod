@@ -7,14 +7,14 @@ import game.input_handlers
 
 
 def main() -> None:
-	screen_width = 80
-	screen_height = 45
+	screen_width = 90
+	screen_height = 75
 
-	map_width = 80
-	map_height = 45
+	map_width = 90
+	map_height = 75
 
 	room_max_size = 10
-	room_min_size = 6
+	room_min_size = 5
 	max_rooms = 30
 
 	tileset = tcod.tileset.load_tilesheet("data/dejavu16x16_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
@@ -30,6 +30,7 @@ def main() -> None:
 		engine=engine,
 	)
 	engine.player = game.entity.Entity(engine.game_map, *engine.game_map.enter_xy, "@", (255,255,255))
+	engine.update_fov()
 
 	event_handler = game.input_handlers.EventHandler(engine)
 
