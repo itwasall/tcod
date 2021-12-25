@@ -33,6 +33,27 @@ class RectangularRoom:
 		"""Return True if this room overlaps with another RectangularRoom"""
 		return self.x1 <= other.x2 and self.x2 >= other.x1 and self.y1 <= other.y2 and self.y2 >= other.y1
 
+def place_entities(room: RectangularRoom, dungeon: game.game_map.GameMap, maximum_monsters: int) -> None:
+    rng = dungeon.engine.rng
+    number_of_monsters = rng.randint(0, maximum_monsters)
+
+    for _ in range(maximum_monsters):
+        x = rng.randint(room.x1 + 1, room.x2 - 1)
+        y = rng.randint(room.y1 + 1, room.y2 - 1)
+
+        if dungeon.get_blocking_entity_at(x,y):
+            continue
+
+        if (x,y) == dungeon.enter_xy:
+            continue
+
+        if rng.random() < 0.8:
+            game.entity.Entity(dungeon, x, y, char="o", color=(63, 127, 63), name="Orc")
+        else:
+            game.entity.Entity(dungeon, x, y, char="T", color=(0, 127, 0), name="Troll")
+
+
+
 
 def tunnel_between(
 	engine: game.engine.Engine, start: Tuple[int, int], end: Tuple[int, int]
@@ -58,6 +79,7 @@ def generate_dungeon(
     room_max_size: int,
     map_width: int,
     map_height: int,
+    max_monsters_per_room: int,
     engine: game.engine.Engine,
 ) -> game.game_map.GameMap:
 	"""Generate a new dungeon map."""
@@ -82,6 +104,8 @@ def generate_dungeon(
 
 		# Dig out this rooms inner area
 		dungeon.tiles[new_room.inner] = FLOOR
+		place_entities(new_room, dungeon, max_monsters_per_room)
+
 
 		if len(rooms) == 0:
 			# The first room, where the player starts

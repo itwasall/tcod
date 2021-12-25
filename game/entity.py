@@ -15,6 +15,8 @@ class Entity:
         y: int,
         char: str,
         color: Tuple[int, int, int],
+        name: str,
+        blocks_movement: bool=True,
     ):
         self.gamemap = gamemap
         gamemap.entities.add(self)
@@ -22,3 +24,5 @@ class Entity:
         self.y = y
         self.char = char
         self.color = color
+        self.name = name
+        self.blocks_movement = blocks_movement

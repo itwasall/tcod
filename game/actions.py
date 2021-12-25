@@ -17,13 +17,17 @@ class Action:
         """
         raise NotImplementedError()
 
-class Move(Action):
+class ActionWithDirection(Action):
     def __init__(self, entity: game.entity.Entity, dx: int, dy: int):
         super().__init__(entity)
 
         self.dx = dx
         self.dy = dy
 
+    def perform(self) -> None:
+        raise NotImplementedError
+
+class Move(ActionWithDirection):
     def perform(self) -> None:
         dest_x = self.entity.x + self.dx
         dest_y = self.entity.y + self.dy

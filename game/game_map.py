@@ -1,7 +1,7 @@
 # /game/game_map.py
 from __future__ import annotations
 
-from typing import Set
+from typing import Set, Optional
 
 import numpy as np
 
@@ -19,6 +19,13 @@ class GameMap:
 
         self.visible = np.full((width, height), fill_value=False, order="F") # Tiles the player can currently see
         self.explored = np.full((width, height), fill_value=False, order="F") # Tiles the player has seen before
+
+    def get_blocking_entity_at(self, x: int, y: int) -> Optional(game.entity.Entity):
+        """Returns an entity that blocks the position at x,y if one exists, otherwise returns None"""
+        for entity in self.entities:
+            if entity.blocks_movement and entity.x == x and entity.y == y:
+                return entity
+        return None
 
     def in_bounds(self, x: int, y: int) -> bool:
         """Return True if x and y are inside of the bounds of this map."""
