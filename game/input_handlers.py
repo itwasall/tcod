@@ -9,7 +9,7 @@ import game.engine
 import game.rendering
 
 MOVE_KEYS = {
-	# Arrow keys.
+    # Arrow keys.
     tcod.event.K_UP: (0, -1),
     tcod.event.K_DOWN: (0, 1),
     tcod.event.K_LEFT: (-1, 0),
@@ -46,6 +46,7 @@ If an action is returned it will be attempted and if it's valid then
 MainGameEventHandler will become the active handler.
 """
 
+
 class EventHandler(tcod.event.EventDispatch[ActionOrHandler]):
     def __init__(self, engine: game.engine.Engine) -> None:
         super().__init__()
@@ -63,6 +64,7 @@ class EventHandler(tcod.event.EventDispatch[ActionOrHandler]):
     def handle_action(self, action: game.actions.Action) -> EventHandler:
         """Handle actions returned from event methods."""
         action.perform()
+        self.engine.handle_enemy_turns()
         self.engine.update_fov()
         return self
 
@@ -74,7 +76,7 @@ class EventHandler(tcod.event.EventDispatch[ActionOrHandler]):
 
         if key in MOVE_KEYS:
             dx, dy = MOVE_KEYS[key]
-            return game.actions.Move(self.engine.player, dx=dx, dy=dy)
+            return game.actions.Bump(self.engine.player, dx=dx, dy=dy)
         elif key == tcod.event.K_ESCAPE:
             raise SystemExit(0)
 

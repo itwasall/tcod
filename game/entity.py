@@ -9,14 +9,14 @@ class Entity:
     """A generic object to represent players, enemies, items, etc."""
 
     def __init__(
-        self,
-        gamemap: game.game_map.GameMap,
-        x: int,
-        y: int,
-        char: str,
-        color: Tuple[int, int, int],
-        name: str,
-        blocks_movement: bool=True,
+            self,
+            gamemap: game.game_map.GameMap,
+            x: int,
+            y: int,
+            char: str,
+            color: Tuple[int, int, int],
+            name: str,
+            blocks_movement: bool = True,
     ):
         self.gamemap = gamemap
         gamemap.entities.add(self)

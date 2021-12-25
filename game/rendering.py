@@ -17,7 +17,6 @@ SHROUD = np.array((ord(" "), (255, 255, 255), (0, 0, 0)), dtype=tcod.console.rgb
 
 
 def render_map(console: tcod.Console, gamemap: game.game_map.GameMap) -> None:
-
     # The default graphics are of tiles that are visible.
     light = tile_graphics[gamemap.tiles]
 
@@ -29,7 +28,7 @@ def render_map(console: tcod.Console, gamemap: game.game_map.GameMap) -> None:
     # If a tile is in the "visible" array, then draw it with the "light" colors.
     # If it isn't, but it's in the "explored" array, then draw it with the "dark" colors.
     # Otherwise, the default graphic is "SHROUD".
-    console.rgb[0 : gamemap.width, 0 : gamemap.height] = np.select(
+    console.rgb[0: gamemap.width, 0: gamemap.height] = np.select(
         condlist=[gamemap.visible, gamemap.explored],
         choicelist=[light, dark],
         default=SHROUD,

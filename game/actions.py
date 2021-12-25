@@ -17,6 +17,7 @@ class Action:
         """
         raise NotImplementedError()
 
+
 class ActionWithDirection(Action):
     def __init__(self, entity: game.entity.Entity, dx: int, dy: int):
         super().__init__(entity)
@@ -26,6 +27,7 @@ class ActionWithDirection(Action):
 
     def perform(self) -> None:
         raise NotImplementedError
+
 
 class Move(ActionWithDirection):
     def perform(self) -> None:
@@ -38,3 +40,24 @@ class Move(ActionWithDirection):
             return  # Destination is blocked by a tile.
 
         self.entity.x, self.entity.y = dest_x, dest_y
+
+class Melee(ActionWithDirection):
+    def perform(self) -> None:
+        dest_x = self.entity.x + self.dx
+        dest_y = self.entity.y + self.dy
+        target = self.engine.game_map.get_blocking_entity_at(dest_x, dest_y)
+        if not target:
+            return  # No entity to attack.
+
+        print(f"You kick the {target.name}, much to its annoyance!")
+
+
+class Bump(ActionWithDirection):
+    def perform(self) -> None:
+        dest_x = self.entity.x + self.dx
+        dest_y = self.entity.y + self.dy
+
+        if self.engine.game_map.get_blocking_entity_at(dest_x, dest_y):
+            return Melee(self.entity, self.dx, self.dy).perform()
+        else:
+            return Move(self.entity, self.dx, self.dy).perform()
