@@ -11,6 +11,9 @@ import game.game_map
 
 WALL = 0
 FLOOR = 1
+global DOWNSTAIRS, UPSTAIRS
+DOWNSTAIRS = False
+UPSTAIRS = False
 
 
 class RectangularRoom:
@@ -34,10 +37,35 @@ class RectangularRoom:
         """Return True if this room overlaps with another RectangularRoom"""
         return self.x1 <= other.x2 and self.x2 >= other.x1 and self.y1 <= other.y2 and self.y2 >= other.y1
 
+def place_one_off(
+        entity: Tuple[str, Tuple[int, int, int], str], # (char, (colour, colour, colour), name)
+        room: RectangularRoom,
+        dungeon: game.game_map.GameMap,
+        rng: game.dungeon.engine.rng
+        ) -> None:
+    x = rng.randint(room.x1 + 1, room.x2 - 1)
+    y = rng.randint(room.y1 + 1, room.y2 - 1)
+    if dungeon.get_blocking_entity_at(x, y):
+        pass
+    if (x, y) == dungeon.enter_xy:
+        pass
+    game.entity.Entity(dungeon, x, y, char=entity[0], color=entity[1], name=entity[2])
+
+
 
 def place_entities(room: RectangularRoom, dungeon: game.game_map.GameMap, maximum_monsters: int) -> None:
+    global DOWNSTAIRS, UPSTAIRS
     rng = dungeon.engine.rng
     number_of_monsters = rng.randint(0, maximum_monsters)
+    if not DOWNSTAIRS:
+        place_one_off((">", (147, 255,0), "StairsDown"), room, dungeon, rng)
+        DOWNSTAIRS = True
+        return None
+
+    if not UPSTAIRS:
+        place_one_off(("<", (147, 255,0), "StairsUp"), room, dungeon, rng)
+        UPSTAIRS = True
+        return None
 
     for _ in range(number_of_monsters):
         x = rng.randint(room.x1 + 1, room.x2 - 1)
