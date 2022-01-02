@@ -6,18 +6,21 @@ import game.entity
 import game.procgen
 import game.input_handlers
 
+WIDTH, HEIGHT = int(1920/2), 1080
+FLAGS = tcod.context.SDL_WINDOW_RESIZABLE | tcod.context.SDL_WINDOW_MAXIMIZED
+
 
 def main() -> None:
-    screen_width = 90
-    screen_height = 75
+    screen_width = 100
+    screen_height = 50
 
-    map_width = 90
-    map_height = 75
+    map_width = 100
+    map_height = 50
 
-    room_max_size = 10
+    room_max_size = 20
     room_min_size = 5
     max_rooms = 30
-    max_monsters_per_room = 7
+    max_monsters_per_room = 2
 
     tileset = tcod.tileset.load_tilesheet("data/dejavu16x16_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
 
@@ -38,10 +41,13 @@ def main() -> None:
     event_handler = game.input_handlers.EventHandler(engine)
 
     with tcod.context.new(
+            width=WIDTH,
+            height=HEIGHT,
             columns=screen_width,
             rows=screen_height,
             tileset=tileset,
             title="Test",
+            sdl_window_flags=FLAGS,
             vsync=True,
     ) as context:
         root_console = tcod.Console(screen_width, screen_height, order="F")
