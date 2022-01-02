@@ -16,13 +16,7 @@ DOWNSTAIRS = False
 UPSTAIRS = False
 
 
-class RectangularRoom:
-    def __init__(self, x: int, y: int, width: int, height: int):
-        self.x1 = x
-        self.y1 = y
-        self.x2 = x + width
-        self.y2 = y + height
-
+class Room:
     @property
     def center(self) -> Tuple[int, int]:
         """Return the centre coordinates of the room"""
@@ -37,12 +31,22 @@ class RectangularRoom:
         """Return True if this room overlaps with another RectangularRoom"""
         return self.x1 <= other.x2 and self.x2 >= other.x1 and self.y1 <= other.y2 and self.y2 >= other.y1
 
+class RectangularRoom(Room):
+    def __init__(self, x: int, y: int, width: int, height: int):
+        super().__init__()
+        self.x1 = x
+        self.y1 = y
+        self.x2 = x + width
+        self.y2 = y + height
+
+
 def place_one_off(
         entity: Tuple[str, Tuple[int, int, int], str], # (char, (colour, colour, colour), name)
         room: RectangularRoom,
         dungeon: game.game_map.GameMap,
-        rng: game.dungeon.engine.rng
-        ) -> None:
+        rng: game.engine.Engine.rng
+) -> None:
+    """Code that places a specific entity, used for special entity generations like stairs"""
     x = rng.randint(room.x1 + 1, room.x2 - 1)
     y = rng.randint(room.y1 + 1, room.y2 - 1)
     if dungeon.get_blocking_entity_at(x, y):
