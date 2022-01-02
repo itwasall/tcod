@@ -41,7 +41,7 @@ class RectangularRoom(Room):
 
 
 def place_one_off(
-        entity: Tuple[str, Tuple[int, int, int], str], # (char, (colour, colour, colour), name)
+        entity: Tuple[str, Tuple[int, int, int], str, bool], # (char, (colour, colour, colour), name, blocks_movement)
         room: RectangularRoom,
         dungeon: game.game_map.GameMap,
         rng: game.engine.Engine.rng
@@ -53,7 +53,7 @@ def place_one_off(
         pass
     if (x, y) == dungeon.enter_xy:
         pass
-    game.entity.Entity(dungeon, x, y, char=entity[0], color=entity[1], name=entity[2])
+    game.entity.Entity(dungeon, x, y, char=entity[0], color=entity[1], name=entity[2], blocks_movement=entity[3])
 
 
 
@@ -62,12 +62,12 @@ def place_entities(room: RectangularRoom, dungeon: game.game_map.GameMap, maximu
     rng = dungeon.engine.rng
     number_of_monsters = rng.randint(0, maximum_monsters)
     if not DOWNSTAIRS:
-        place_one_off((">", (147, 255,0), "StairsDown"), room, dungeon, rng)
+        place_one_off((">", (147, 255,0), "StairsDown", False), room, dungeon, rng)
         DOWNSTAIRS = True
         return None
 
     if not UPSTAIRS:
-        place_one_off(("<", (147, 255,0), "StairsUp"), room, dungeon, rng)
+        place_one_off(("<", (147, 255,0), "StairsUp", False), room, dungeon, rng)
         UPSTAIRS = True
         return None
 

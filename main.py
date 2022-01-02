@@ -51,12 +51,12 @@ def main() -> None:
             vsync=True,
     ) as context:
         root_console = tcod.Console(screen_width, screen_height, order="F")
-        log_console = tcod.Console(10, 10, order="C")
+        # log_console = tcod.Console(10, 10, order="C")
         while True:
             root_console.clear()
-            log_console.clear()
+            # log_console.clear()
             event_handler.on_render(console=root_console)
-            context.present(log_console)
+            # context.present(log_console)
             context.present(root_console)
 
             for event in tcod.event.wait():

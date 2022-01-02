@@ -10,7 +10,12 @@ import game.entity
 
 
 class GameMap:
-    def __init__(self, engine: game.engine.Engine, width: int, height: int):
+    def __init__(
+        self, 
+        engine: game.engine.Engine, 
+        width: int, 
+        height: int
+    ):
         self.engine = engine
         self.width, self.height = width, height
         self.tiles = np.zeros((width, height), dtype=np.uint8, order="F")
