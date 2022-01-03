@@ -1,0 +1,224 @@
+Index: main.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import tcod\r\nimport logging\r\nimport random\r\nimport game.engine\r\nimport game.entity\r\nimport game.procgen\r\nimport game.input_handlers\r\n\r\nWIDTH, HEIGHT = int(1920/2), 1080\r\nFLAGS = tcod.context.SDL_WINDOW_RESIZABLE | tcod.context.SDL_WINDOW_MAXIMIZED\r\n\r\n\r\ndef main() -> None:\r\n    screen_width = 100\r\n    screen_height = 50\r\n\r\n    map_width = 100\r\n    map_height = 50\r\n\r\n    room_max_size = 20\r\n    room_min_size = 5\r\n    max_rooms = 30\r\n    max_monsters_per_room = 2\r\n\r\n    tileset = tcod.tileset.load_tilesheet(\"data/dejavu16x16_gs_tc.png\", 32, 8, tcod.tileset.CHARMAP_TCOD)\r\n\r\n    engine = game.engine.Engine()\r\n    engine.rng = random.Random()\r\n    engine.game_map = game.procgen.generate_dungeon(\r\n        max_rooms=max_rooms,\r\n        room_min_size=room_min_size,\r\n        room_max_size=room_max_size,\r\n        map_width=map_width,\r\n        map_height=map_height,\r\n        max_monsters_per_room=max_monsters_per_room,\r\n        engine=engine,\r\n    )\r\n    engine.player = game.entity.Entity(engine.game_map, *engine.game_map.enter_xy, \"@\", (255, 255, 255), name=\"Player\")\r\n    engine.update_fov()\r\n\r\n    event_handler = game.input_handlers.EventHandler(engine)\r\n\r\n    with tcod.context.new(\r\n            width=WIDTH,\r\n            height=HEIGHT,\r\n            columns=screen_width,\r\n            rows=screen_height,\r\n            tileset=tileset,\r\n            title=\"Test\",\r\n            sdl_window_flags=FLAGS,\r\n            vsync=True,\r\n    ) as context:\r\n        root_console = tcod.Console(screen_width, screen_height, order=\"F\")\r\n        log_console = tcod.Console(10, 10, order=\"C\")\r\n        while True:\r\n            root_console.clear()\r\n            log_console.clear()\r\n            event_handler.on_render(console=root_console)\r\n            context.present(log_console)\r\n            context.present(root_console)\r\n\r\n            for event in tcod.event.wait():\r\n                event_handler = event_handler.handle_events(event)\r\n\r\n\r\nif __name__ == \"__main__\":\r\n    if __debug__:\r\n        logging.basicConfig(level=logging.DEBUG)\r\n    main()\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main.py b/main.py
+--- a/main.py	(revision 9a644065e6d6caf05bf53f22cdbbf6da86402c4f)
++++ b/main.py	(date 1641160773996)
+@@ -51,12 +51,12 @@
+             vsync=True,
+     ) as context:
+         root_console = tcod.Console(screen_width, screen_height, order="F")
+-        log_console = tcod.Console(10, 10, order="C")
++        # log_console = tcod.Console(10, 10, order="C")
+         while True:
+             root_console.clear()
+-            log_console.clear()
++            # log_console.clear()
+             event_handler.on_render(console=root_console)
+-            context.present(log_console)
++            # context.present(log_console)
+             context.present(root_console)
+ 
+             for event in tcod.event.wait():
+Index: game/game_map.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># /game/game_map.py\r\nfrom __future__ import annotations\r\n\r\nfrom typing import Set, Optional\r\n\r\nimport numpy as np\r\n\r\nimport game.engine\r\nimport game.entity\r\n\r\n\r\nclass GameMap:\r\n    def __init__(self, engine: game.engine.Engine, width: int, height: int):\r\n        self.engine = engine\r\n        self.width, self.height = width, height\r\n        self.tiles = np.zeros((width, height), dtype=np.uint8, order=\"F\")\r\n        self.entities: Set[game.entity.Entity] = set()\r\n        self.enter_xy = (width // 2, height // 2)  # Entrance coordinates\r\n\r\n        self.visible = np.full((width, height), fill_value=False, order=\"F\")  # Tiles the player can currently see\r\n        self.explored = np.full((width, height), fill_value=False, order=\"F\")  # Tiles the player has seen before\r\n\r\n    def get_blocking_entity_at(self, x: int, y: int) -> Optional[game.entity.Entity]:\r\n        \"\"\"Returns an entity that blocks the position at x,y if one exists, otherwise returns None\"\"\"\r\n        for entity in self.entities:\r\n            if entity.blocks_movement and entity.x == x and entity.y == y:\r\n                return entity\r\n        return None\r\n\r\n    def in_bounds(self, x: int, y: int) -> bool:\r\n        \"\"\"Return True if x and y are inside of the bounds of this map.\"\"\"\r\n        return 0 <= x < self.width and 0 <= y < self.height\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/game/game_map.py b/game/game_map.py
+--- a/game/game_map.py	(revision 9a644065e6d6caf05bf53f22cdbbf6da86402c4f)
++++ b/game/game_map.py	(date 1641164651971)
+@@ -13,8 +13,9 @@
+     def __init__(self, engine: game.engine.Engine, width: int, height: int):
+         self.engine = engine
+         self.width, self.height = width, height
+-        self.tiles = np.zeros((width, height), dtype=np.uint8, order="F")
+         self.entities: Set[game.entity.Entity] = set()
++        self.tiles = np.zeros((width, height), dtype=np.uint8, order="F")
++
+         self.enter_xy = (width // 2, height // 2)  # Entrance coordinates
+ 
+         self.visible = np.full((width, height), fill_value=False, order="F")  # Tiles the player can currently see
+@@ -23,7 +24,11 @@
+     def get_blocking_entity_at(self, x: int, y: int) -> Optional[game.entity.Entity]:
+         """Returns an entity that blocks the position at x,y if one exists, otherwise returns None"""
+         for entity in self.entities:
+-            if entity.blocks_movement and entity.x == x and entity.y == y:
++            if (
++                entity.blocks_movement
++                and entity.x == x
++                and entity.y == y
++            ):
+                 return entity
+         return None
+ 
+Index: game/input_handlers.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from __future__ import annotations\r\n\r\nfrom typing import Optional, Union\r\n\r\nimport tcod\r\n\r\nimport game.actions\r\nimport game.engine\r\nimport game.rendering\r\n\r\nMOVE_KEYS = {\r\n    # Arrow keys.\r\n    tcod.event.K_UP: (0, -1),\r\n    tcod.event.K_DOWN: (0, 1),\r\n    tcod.event.K_LEFT: (-1, 0),\r\n    tcod.event.K_RIGHT: (1, 0),\r\n    tcod.event.K_HOME: (-1, -1),\r\n    tcod.event.K_END: (-1, 1),\r\n    tcod.event.K_PAGEUP: (1, -1),\r\n    tcod.event.K_PAGEDOWN: (1, 1),\r\n    # Numpad keys.\r\n    tcod.event.K_KP_1: (-1, 1),\r\n    tcod.event.K_KP_2: (0, 1),\r\n    tcod.event.K_KP_3: (1, 1),\r\n    tcod.event.K_KP_4: (-1, 0),\r\n    tcod.event.K_KP_6: (1, 0),\r\n    tcod.event.K_KP_7: (-1, -1),\r\n    tcod.event.K_KP_8: (0, -1),\r\n    tcod.event.K_KP_9: (1, -1),\r\n    # Vi keys.\r\n    tcod.event.K_h: (-1, 0),\r\n    tcod.event.K_j: (0, 1),\r\n    tcod.event.K_k: (0, -1),\r\n    tcod.event.K_l: (1, 0),\r\n    tcod.event.K_y: (-1, -1),\r\n    tcod.event.K_u: (1, -1),\r\n    tcod.event.K_b: (-1, 1),\r\n    tcod.event.K_n: (1, 1),\r\n}\r\n\r\nActionOrHandler = Union[\"game.actions.Action\", \"EventHandler\"]\r\n\"\"\"An event handler return value which can trigger an action or switch active handlers.\r\n\r\nIf a handler is returned then it will become the active handler for future events.\r\nIf an action is returned it will be attempted and if it's valid then\r\nMainGameEventHandler will become the active handler.\r\n\"\"\"\r\n\r\n\r\nclass EventHandler(tcod.event.EventDispatch[ActionOrHandler]):\r\n    def __init__(self, engine: game.engine.Engine) -> None:\r\n        super().__init__()\r\n        self.engine = engine\r\n\r\n    def handle_events(self, event: tcod.event.Event) -> EventHandler:\r\n        \"\"\"Handle an event, perform any actions, then return the next active event handler.\"\"\"\r\n        action_or_state = self.dispatch(event)\r\n        if isinstance(action_or_state, EventHandler):\r\n            return action_or_state\r\n        elif isinstance(action_or_state, game.actions.Action):\r\n            return self.handle_action(action_or_state)\r\n        return self\r\n\r\n    def handle_action(self, action: game.actions.Action) -> EventHandler:\r\n        \"\"\"Handle actions returned from event methods.\"\"\"\r\n        action.perform()\r\n        self.engine.handle_enemy_turns()\r\n        self.engine.update_fov()\r\n        return self\r\n\r\n    def ev_quit(self, event: tcod.event.Quit) -> Optional[ActionOrHandler]:\r\n        raise SystemExit(0)\r\n\r\n    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:\r\n        key = event.sym\r\n\r\n        if key in MOVE_KEYS:\r\n            dx, dy = MOVE_KEYS[key]\r\n            return game.actions.Bump(self.engine.player, dx=dx, dy=dy)\r\n        elif key == tcod.event.K_ESCAPE:\r\n            raise SystemExit(0)\r\n\r\n        return None\r\n\r\n    def on_render(self, console: tcod.Console) -> None:\r\n        game.rendering.render_map(console, self.engine.game_map)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/game/input_handlers.py b/game/input_handlers.py
+--- a/game/input_handlers.py	(revision 9a644065e6d6caf05bf53f22cdbbf6da86402c4f)
++++ b/game/input_handlers.py	(date 1641160313977)
+@@ -27,15 +27,6 @@
+     tcod.event.K_KP_7: (-1, -1),
+     tcod.event.K_KP_8: (0, -1),
+     tcod.event.K_KP_9: (1, -1),
+-    # Vi keys.
+-    tcod.event.K_h: (-1, 0),
+-    tcod.event.K_j: (0, 1),
+-    tcod.event.K_k: (0, -1),
+-    tcod.event.K_l: (1, 0),
+-    tcod.event.K_y: (-1, -1),
+-    tcod.event.K_u: (1, -1),
+-    tcod.event.K_b: (-1, 1),
+-    tcod.event.K_n: (1, 1),
+ }
+ 
+ ActionOrHandler = Union["game.actions.Action", "EventHandler"]
+Index: game/actions.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># /game/actions.py\r\nfrom __future__ import annotations\r\n\r\nimport game.entity\r\n\r\n\r\nclass Action:\r\n    def __init__(self, entity: game.entity.Entity) -> None:\r\n        super().__init__()\r\n        self.entity = entity  # The object performing the action.\r\n        self.engine = entity.gamemap.engine\r\n\r\n    def perform(self) -> None:\r\n        \"\"\"Perform this action now.\r\n\r\n        This method must be overridden by Action subclasses.\r\n        \"\"\"\r\n        raise NotImplementedError()\r\n\r\n\r\nclass ActionWithDirection(Action):\r\n    def __init__(self, entity: game.entity.Entity, dx: int, dy: int):\r\n        super().__init__(entity)\r\n\r\n        self.dx = dx\r\n        self.dy = dy\r\n\r\n    def perform(self) -> None:\r\n        raise NotImplementedError\r\n\r\n\r\nclass Move(ActionWithDirection):\r\n\r\n    def perform(self) -> None:\r\n        dest_x = self.entity.x + self.dx\r\n        dest_y = self.entity.y + self.dy\r\n\r\n        if not self.engine.game_map.in_bounds(dest_x, dest_y):\r\n            return  # Destination is out of bounds.\r\n        if not self.engine.game_map.tiles[dest_x, dest_y]:\r\n            return  # Destination is blocked by a tile.\r\n\r\n        self.entity.x, self.entity.y = dest_x, dest_y\r\n\r\nclass Melee(ActionWithDirection):\r\n\r\n    def perform(self) -> None:\r\n        dest_x = self.entity.x + self.dx\r\n        dest_y = self.entity.y + self.dy\r\n        target = self.engine.game_map.get_blocking_entity_at(dest_x, dest_y)\r\n        if not target:\r\n            return  # No entity to attack.\r\n        print(f\"You kick the {target.name}, much to its annoyance!\")\r\n\r\n\r\nclass Bump(ActionWithDirection):\r\n\r\n    def perform(self) -> None:\r\n        dest_x = self.entity.x + self.dx\r\n        dest_y = self.entity.y + self.dy\r\n\r\n        if self.engine.game_map.get_blocking_entity_at(dest_x, dest_y):\r\n            return Melee(self.entity, self.dx, self.dy).perform()\r\n        else:\r\n            return Move(self.entity, self.dx, self.dy).perform()\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/game/actions.py b/game/actions.py
+--- a/game/actions.py	(revision 9a644065e6d6caf05bf53f22cdbbf6da86402c4f)
++++ b/game/actions.py	(date 1641160941729)
+@@ -1,14 +1,22 @@
+ # /game/actions.py
+ from __future__ import annotations
++from typing import Optional, Tuple, TYPE_CHECKING
+ 
+-import game.entity
++
++if TYPE_CHECKING:
++    import game.engine
++    import game.entity
+ 
+ 
+ class Action:
+     def __init__(self, entity: game.entity.Entity) -> None:
+         super().__init__()
+         self.entity = entity  # The object performing the action.
+-        self.engine = entity.gamemap.engine
++
++    @property
++    def engine(self) -> game.engine.Engine:
++        """Returns the engine this action belongs to"""
++        return self.entity.gamemap.engine
+ 
+     def perform(self) -> None:
+         """Perform this action now.
+@@ -17,23 +25,34 @@
+         """
+         raise NotImplementedError()
+ 
++class EscapeAction(Action):
++    def perform(self) -> None:
++        raise SystemExit
++
+ 
+ class ActionWithDirection(Action):
+     def __init__(self, entity: game.entity.Entity, dx: int, dy: int):
+         super().__init__(entity)
+-
+         self.dx = dx
+         self.dy = dy
+ 
++    @property
++    def dest_xy(self) -> Tuple[int, int]:
++        """Returns this actions destination"""
++        return self.entity.x + self.dx, self.entity.y + self.dy
++
++    @property
++    def blocking_entity(self) -> Optional[game.entity.Entity]:
++        """Returns the blocking entity at this actions destination"""
++        return self.engine.game_map.get_blocking_entity_at(*self.dest_xy)
++
+     def perform(self) -> None:
+         raise NotImplementedError
+ 
+ 
+ class Move(ActionWithDirection):
+-
+     def perform(self) -> None:
+-        dest_x = self.entity.x + self.dx
+-        dest_y = self.entity.y + self.dy
++        dest_x, dest_y = self.dest_xy
+ 
+         if not self.engine.game_map.in_bounds(dest_x, dest_y):
+             return  # Destination is out of bounds.
+@@ -43,23 +62,14 @@
+         self.entity.x, self.entity.y = dest_x, dest_y
+ 
+ class Melee(ActionWithDirection):
+-
+     def perform(self) -> None:
+-        dest_x = self.entity.x + self.dx
+-        dest_y = self.entity.y + self.dy
+-        target = self.engine.game_map.get_blocking_entity_at(dest_x, dest_y)
+-        if not target:
+-            return  # No entity to attack.
++        target = self.blocking_entity
+         print(f"You kick the {target.name}, much to its annoyance!")
+ 
+ 
+ class Bump(ActionWithDirection):
+-
+     def perform(self) -> None:
+-        dest_x = self.entity.x + self.dx
+-        dest_y = self.entity.y + self.dy
+-
+-        if self.engine.game_map.get_blocking_entity_at(dest_x, dest_y):
++        if self.blocking_entity:
+             return Melee(self.entity, self.dx, self.dy).perform()
+         else:
+             return Move(self.entity, self.dx, self.dy).perform()
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"f25273af-9196-4d27-9865-c64c24780632\" name=\"Changes\" comment=\"\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/game/procgen.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/game/procgen.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/main.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/main.py\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitSEFilterConfiguration\">\r\n    <file-type-list>\r\n      <filtered-out-file-type name=\"LOCAL_BRANCH\" />\r\n      <filtered-out-file-type name=\"REMOTE_BRANCH\" />\r\n      <filtered-out-file-type name=\"TAG\" />\r\n      <filtered-out-file-type name=\"COMMIT_BY_MESSAGE\" />\r\n    </file-type-list>\r\n  </component>\r\n  <component name=\"GithubPullRequestsUISettings\">\r\n    <option name=\"selectedUrlAndAccountId\">\r\n      <UrlAndAccount>\r\n        <option name=\"accountId\" value=\"2b4ca1b1-f307-470c-9061-fe769660cc4e\" />\r\n        <option name=\"url\" value=\"https://github.com/refrshrs/tcod.git\" />\r\n      </UrlAndAccount>\r\n    </option>\r\n  </component>\r\n  <component name=\"ProjectId\" id=\"22mEG8kHeToF2cVKfu1vAdagwKN\" />\r\n  <component name=\"ProjectLevelVcsManager\">\r\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\r\n  </component>\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">\r\n    <property name=\"RunOnceActivity.OpenProjectViewOnStart\" value=\"true\" />\r\n    <property name=\"RunOnceActivity.ShowReadmeOnStart\" value=\"true\" />\r\n    <property name=\"last_opened_file_path\" value=\"$PROJECT_DIR$/main.py\" />\r\n  </component>\r\n  <component name=\"RunManager\">\r\n    <configuration name=\"main\" type=\"PythonConfigurationType\" factoryName=\"Python\" nameIsGenerated=\"true\">\r\n      <module name=\"tcod\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"C:\\Users\\Niall\\AppData\\Local\\Programs\\Python\\Python39\\python.exe\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/main.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"f25273af-9196-4d27-9865-c64c24780632\" name=\"Changes\" comment=\"\" />\r\n      <created>1640434263770</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1640434263770</updated>\r\n    </task>\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"oldMeFiltersMigrated\" value=\"true\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 9a644065e6d6caf05bf53f22cdbbf6da86402c4f)
++++ b/.idea/workspace.xml	(date 1641161277197)
+@@ -3,7 +3,9 @@
+   <component name="ChangeListManager">
+     <list default="true" id="f25273af-9196-4d27-9865-c64c24780632" name="Changes" comment="">
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/game/procgen.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/procgen.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/game/actions.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/actions.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/game/game_map.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/game_map.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/game/input_handlers.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/input_handlers.py" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+@@ -80,4 +82,15 @@
+   <component name="Vcs.Log.Tabs.Properties">
+     <option name="oldMeFiltersMigrated" value="true" />
+   </component>
++  <component name="XDebuggerManager">
++    <breakpoint-manager>
++      <breakpoints>
++        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
++          <url>file://$PROJECT_DIR$/game/game_map.py</url>
++          <line>1</line>
++          <option name="timeStamp" value="1" />
++        </line-breakpoint>
++      </breakpoints>
++    </breakpoint-manager>
++  </component>
+ </project>
+\ No newline at end of file

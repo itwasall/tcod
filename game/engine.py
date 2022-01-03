@@ -8,6 +8,7 @@ import tcod
 
 import game.entity
 import game.game_map
+from game.input_handlers import EventHandler
 
 logger = logging.getLogger(__name__)
 
@@ -18,8 +19,9 @@ class Engine:
 
     def handle_enemy_turns(self) -> None:
         logger.info("Enemy turn")
-        for it, entity in enumerate(self.game_map.entities - {self.player}):
-            logger.info(f"{it} - The {entity.name} wonders when it will get to take a real turn.")
+        for entity in set(self.game_map.actors) - {self.player}:
+            if entity.ai:
+                entity.ai.perform()
 
 
     def update_fov(self) -> None:

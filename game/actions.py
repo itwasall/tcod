@@ -29,6 +29,10 @@ class EscapeAction(Action):
     def perform(self) -> None:
         raise SystemExit
 
+class Wait(Action):
+    def perform(self) -> None:
+        pass
+
 
 class ActionWithDirection(Action):
     def __init__(self, entity: game.entity.Entity, dx: int, dy: int):

@@ -1,8 +1,8 @@
+from typing import TYPE_CHECKING
 import tcod
 import logging
 import random
 import game.engine
-import game.entity
 import game.procgen
 import game.input_handlers
 

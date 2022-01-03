@@ -1,12 +1,15 @@
 # /game/game_map.py
 from __future__ import annotations
 
-from typing import Set, Optional
+from typing import Set, Optional, TYPE_CHECKING
 
 import numpy as np
 
 import game.engine
-import game.entity
+from game.entity import Actor
+
+if TYPE_CHECKING:
+    from game.entity import Entity
 
 
 class GameMap:

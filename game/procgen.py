@@ -1,13 +1,15 @@
 # /game/procgen.py
 from __future__ import annotations
 
-from typing import Iterator, List, Tuple
+from typing import Iterator, List, Tuple, TYPE_CHECKING
 
 import tcod
-
-import game.engine
-import game.entity
 import game.game_map
+import game.entity_factories
+
+if TYPE_CHECKING:
+    import game.engine
+    import game.entity
 
 WALL = 0
 FLOOR = 1
@@ -40,20 +42,11 @@ class RectangularRoom(Room):
         self.y2 = y + height
 
 
-def place_one_off(
-        entity: Tuple[str, Tuple[int, int, int], str, bool], # (char, (colour, colour, colour), name, blocks_movement)
-        room: RectangularRoom,
-        dungeon: game.game_map.GameMap,
-        rng: game.engine.Engine.rng
-) -> None:
-    """Code that places a specific entity, used for special entity generations like stairs"""
+def rang(room, rng) -> List[int, int]:
+    """Generates random x y coordinates"""
     x = rng.randint(room.x1 + 1, room.x2 - 1)
     y = rng.randint(room.y1 + 1, room.y2 - 1)
-    if dungeon.get_blocking_entity_at(x, y):
-        pass
-    if (x, y) == dungeon.enter_xy:
-        pass
-    game.entity.Entity(dungeon, x, y, char=entity[0], color=entity[1], name=entity[2], blocks_movement=entity[3])
+    return x, y
 
 
 
@@ -62,29 +55,22 @@ def place_entities(room: RectangularRoom, dungeon: game.game_map.GameMap, maximu
     rng = dungeon.engine.rng
     number_of_monsters = rng.randint(0, maximum_monsters)
     if not DOWNSTAIRS:
-        place_one_off((">", (147, 255,0), "StairsDown", False), room, dungeon, rng)
+        x, y = rang(room, rng)
+        game.entity_factories.stair_down.spawn(dungeon, x, y)
         DOWNSTAIRS = True
         return None
-
     if not UPSTAIRS:
-        place_one_off(("<", (147, 255,0), "StairsUp", False), room, dungeon, rng)
+        x, y = rang(room, rng)
+        game.entity_factories.stair_up.spawn(dungeon, x, y)
         UPSTAIRS = True
         return None
 
     for _ in range(number_of_monsters):
-        x = rng.randint(room.x1 + 1, room.x2 - 1)
-        y = rng.randint(room.y1 + 1, room.y2 - 1)
-
-        if dungeon.get_blocking_entity_at(x, y):
-            continue
-
-        if (x, y) == dungeon.enter_xy:
-            continue
-
+        x, y = rang(room, rng)
         if rng.random() < 0.8:
-            game.entity.Entity(dungeon, x, y, char="o", color=(63, 127, 63), name="Orc")
+            game.entity_factories.orc.spawn(dungeon, x, y)
         else:
-            game.entity.Entity(dungeon, x, y, char="T", color=(0, 127, 0), name="Troll")
+            game.entity_factories.troll.spawn(dungeon, x, y)
 
 
 def tunnel_between(
