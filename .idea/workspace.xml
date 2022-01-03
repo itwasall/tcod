@@ -2,17 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f25273af-9196-4d27-9865-c64c24780632" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/game/components/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game/components/ai.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game/components/base_component.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game/components/fighter.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game/entity_factories.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/game/render_order.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Changes.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Changes.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Changes1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Changes1.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/actions.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/actions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/components/fighter.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/components/fighter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/engine.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/engine.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/entity.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/entity.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/game_map.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/game_map.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/procgen.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/procgen.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/rendering.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/rendering.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

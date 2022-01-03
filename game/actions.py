@@ -76,7 +76,7 @@ class Melee(ActionWithDirection):
         if not target:
             return # No entity to attack
 
-        damage = self.entity.target_actor.fighter.power - self.target.fighter.defence
+        damage = self.entity.fighter.power - target.fighter.defence
 
         attack_desc = f"{self.entity.name.capitalize()} attacks {target.name}"
         if damage > 0:

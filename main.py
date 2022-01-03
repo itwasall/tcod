@@ -1,3 +1,4 @@
+import copy
 from typing import TYPE_CHECKING
 import tcod
 import logging
@@ -5,6 +6,7 @@ import random
 import game.engine
 import game.procgen
 import game.input_handlers
+import game.entity_factories
 
 WIDTH, HEIGHT = int(1920/2), 1080
 FLAGS = tcod.context.SDL_WINDOW_RESIZABLE | tcod.context.SDL_WINDOW_MAXIMIZED
@@ -24,7 +26,9 @@ def main() -> None:
 
     tileset = tcod.tileset.load_tilesheet("data/dejavu16x16_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
 
-    engine = game.engine.Engine()
+    player = copy.deepcopy(game.entity_factories.player)
+
+    engine = game.engine.Engine(player)
     engine.rng = random.Random()
     engine.game_map = game.procgen.generate_dungeon(
         max_rooms=max_rooms,
@@ -35,7 +39,8 @@ def main() -> None:
         max_monsters_per_room=max_monsters_per_room,
         engine=engine,
     )
-    engine.player = game.entity.Entity(engine.game_map, *engine.game_map.enter_xy, "@", (255, 255, 255), name="Player")
+    # engine.player = game.entity.Entity(engine.game_map, *engine.game_map.enter_xy, "@", (255, 255, 255), name="Player")
+    engine.player = game.entity_factories.player.spawn(engine.game_map, *engine.game_map.enter_xy)
     engine.update_fov()
 
     event_handler = game.input_handlers.EventHandler(engine)
@@ -51,13 +56,11 @@ def main() -> None:
             vsync=True,
     ) as context:
         root_console = tcod.Console(screen_width, screen_height, order="F")
-        # log_console = tcod.Console(10, 10, order="C")
         while True:
-            root_console.clear()
-            # log_console.clear()
-            event_handler.on_render(console=root_console)
-            # context.present(log_console)
-            context.present(root_console)
+            engine.render(root_console, context)
+            #root_console.clear()
+            #event_handler.on_render(console=root_console)
+            #context.present(root_console)
 
             for event in tcod.event.wait():
                 event_handler = event_handler.handle_events(event)

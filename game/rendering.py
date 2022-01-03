@@ -34,7 +34,13 @@ def render_map(console: tcod.Console, gamemap: game.game_map.GameMap) -> None:
         default=SHROUD,
     )
 
-    for entity in gamemap.entities:
+    entities_sorted_for_rendering = sorted(
+        gamemap.entities, key=lambda x: x.render_order.value
+    )
+
+    for entity in entities_sorted_for_rendering:
         if not gamemap.visible[entity.x, entity.y]:
             continue  # Skip entities that are not in the FOV.
-        console.print(entity.x, entity.y, entity.char, fg=entity.color)
+        console.print(
+            entity.x, entity.y, entity.char, fg=entity.color
+        )

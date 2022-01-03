@@ -4,6 +4,7 @@ import copy
 from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING
 
 from game.components.ai import BaseAI
+from game.render_order import RenderOrder
 
 from game.components.fighter import Fighter
 if TYPE_CHECKING:
@@ -26,6 +27,7 @@ class Entity:
             color: Tuple[int, int, int] = (255, 255, 255),
             name: str = "<Unnamed>",
             blocks_movement: bool = True,
+            render_order: RenderOrder = RenderOrder.CORPSE,
     ):
         self.x = x
         self.y = y
@@ -33,6 +35,8 @@ class Entity:
         self.color = color
         self.name = name
         self.blocks_movement = blocks_movement
+        self.render_order = render_order
+
         if gamemap:
             # If gamemap isn't provided now then it will be set later
             self.gamemap = gamemap
@@ -70,7 +74,15 @@ class Actor(Entity):
             ai_cls = Type[BaseAI],
             fighter: Fighter
     ):
-        super().__init__(x=x, y=y, char=char, color=color, name=name, blocks_movement=True)
+        super().__init__(
+            x=x,
+            y=y,
+            char=char,
+            color=color,
+            name=name,
+            blocks_movement=True,
+            render_order=RenderOrder.ACTOR,
+    )
 
         self.ai: Optional[BaseAI] = ai_cls(self)
 
