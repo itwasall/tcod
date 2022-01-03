@@ -1,7 +1,7 @@
 # /game/game_map.py
 from __future__ import annotations
 
-from typing import Set, Optional, TYPE_CHECKING
+from typing import Iterator, Optional, TYPE_CHECKING, Set
 
 import numpy as np
 
@@ -38,3 +38,18 @@ class GameMap:
     def in_bounds(self, x: int, y: int) -> bool:
         """Return True if x and y are inside of the bounds of this map."""
         return 0 <= x < self.width and 0 <= y < self.height
+
+    @property
+    def actors(self) -> Iterator[Actor]:
+        """Iterates over this maps living actors"""
+        yield from (
+            entity
+            for entity in self.entities
+            if isinstance(entity, Actor) and entity.is_alive
+        )
+
+    def get_actor_at_location(self, x: int, y: int) -> Optional[Actor]:
+        for actor in self.actors:
+            if actor.x == x and actor.y == y:
+                return actor
+        return None

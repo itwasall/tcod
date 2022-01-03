@@ -61,6 +61,7 @@ def main() -> None:
 
             for event in tcod.event.wait():
                 event_handler = event_handler.handle_events(event)
+            
 
 
 if __name__ == "__main__":

@@ -28,6 +28,11 @@ MOVE_KEYS = {
     tcod.event.K_KP_8: (0, -1),
     tcod.event.K_KP_9: (1, -1),
 }
+WAIT_KEYS = {
+    tcod.event.K_PERIOD,
+    tcod.event.K_KP_5,
+    tcod.event.K_CLEAR,
+}
 
 ActionOrHandler = Union["game.actions.Action", "EventHandler"]
 """An event handler return value which can trigger an action or switch active handlers.
@@ -68,6 +73,8 @@ class EventHandler(tcod.event.EventDispatch[ActionOrHandler]):
         if key in MOVE_KEYS:
             dx, dy = MOVE_KEYS[key]
             return game.actions.Bump(self.engine.player, dx=dx, dy=dy)
+        elif key in WAIT_KEYS:
+            return game.actions.Wait(self.engine.player)
         elif key == tcod.event.K_ESCAPE:
             raise SystemExit(0)
 
