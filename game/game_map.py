@@ -41,7 +41,7 @@ class GameMap:
 
     @property
     def actors(self) -> Iterator[Actor]:
-        """Iterates over this maps living actors"""
+        """Iterates over this map's living actors"""
         yield from (
             entity
             for entity in self.entities
